@@ -5,6 +5,7 @@ window.Webflow.push(() => {
   
 
   let jsonData = [];
+  let newZoom = 7;
 
   let getData = function () {
     let cmsData = document.querySelectorAll('[data-schools="info"]');
@@ -15,20 +16,31 @@ window.Webflow.push(() => {
   };
 
   getData();
-
+  
   
 
   // Initialize the map
-  const map = L.map("map").setView([46.5, -94], 6); // Set default center and zoom level
+ 
+  const map = L.map('map', {
+    scrollWheelZoom: false
+}).setView([46.5, -94], 6);
 
+map.on('click', function (e) {
+  // Get the clicked coordinates
+  var clickedLat = e.latlng.lat;
+  var clickedLng = e.latlng.lng;
+  
+  // Set the new zoom level and center the map
+  map.setView([clickedLat, clickedLng], newZoom)
+  newZoom++;
+});
   // Add a tile layer to the map (you can choose other tile providers)
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "© OpenStreetMap contributors",
-    }).addTo(map);
+}).addTo(map);
 
     // Iterate over the JSON data and create markers on the map
-    jsonData.forEach(function (school) {
-      console.log(school.lat);
+jsonData.forEach(function (school) {
       if (school.lat && school.lng) {
         const marker = L.marker([school.lat, school.lng]).addTo(map);
 
